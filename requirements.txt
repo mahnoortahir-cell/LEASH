@@ -1,0 +1,9 @@
+pydantic>=2.5
+httpx>=0.27
+fastapi>=0.110
+uvicorn>=0.29
+rich>=13.0
+# Only needed for the optional AI features (plain-English rules, dispute statement draft):
+anthropic>=0.40
+# For the tests:
+pytest>=8.0

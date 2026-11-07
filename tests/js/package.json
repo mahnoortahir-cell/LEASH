@@ -1,0 +1,6 @@
+{
+  "name": "leash-dashboard-tests",
+  "private": true,
+  "description": "Optional: runs the dashboard's JavaScript in a fake browser (jsdom). Install with: npm install",
+  "devDependencies": { "jsdom": "^26.0.0" }
+}

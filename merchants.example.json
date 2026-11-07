@@ -1,0 +1,5 @@
+{
+  "Pizza Palace": ["pizza-palace@example.com"],
+  "Sushi Go": ["sushi-go@example.com"],
+  "My Sandbox Shop": ["PUT-THE-PAYEE-ID-FROM-`leash sandbox order`-HERE"]
+}

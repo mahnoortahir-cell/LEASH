@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="leash-token" content="__TOKEN__">
+<title>Leash dashboard</title>
+<link rel="stylesheet" href="/static/dashboard.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><span class="dot"></span><strong>Leash</strong><span id="mode" class="badge"></span></div>
+  <div class="top-right">
+    <span id="chain" class="chain"></span>
+    <button id="kill" class="btn kill" type="button">Kill switch</button>
+  </div>
+</header>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+<div id="offline" class="offline" hidden>Lost contact with the Leash program. Is it still running?</div>
+
+<main class="layout">
+  <aside class="side">
+    <section class="panel">
+      <h2>Your rules</h2>
+      <ul id="rules" class="rules"></ul>
+      <details>
+        <summary>Change the rules (plain English)</summary>
+        <textarea id="rules-text" rows="3" placeholder="For example: Keep lunches under $200 a week at Pizza Palace, max $60 per order, ask me above $40"></textarea>
+        <button id="rules-preview" class="btn" type="button">Preview</button>
+        <div id="rules-result"></div>
+      </details>
+    </section>
+    <section class="panel">
+      <h2>Budget</h2>
+      <div class="meter"><div id="meter-fill"></div></div>
+      <p id="budget-text" class="small"></p>
+      <p id="today-text" class="small muted"></p>
+    </section>
+    <section class="panel">
+      <h2 id="try-title">Try it</h2>
+      <div id="try"></div>
+    </section>
+  </aside>
+
+  <section class="feed">
+    <h2>What the agent tried <span class="muted small">(newest first)</span></h2>
+    <div id="cards"></div>
+  </section>
+</main>
+
+<section class="panel logpanel">
+  <h2 class="loghead">Audit log <span class="muted small">every step is chained to the one before it</span>
+    <button id="grid-toggle" class="btn tiny" type="button">Show as simple table</button></h2>
+  <p id="grid-note" class="small muted" hidden></p>
+  <div id="grid" class="grid-box"></div>
+</section>
+
+<div id="modal" class="modal" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-head">
+      <h2 id="modal-title">Evidence packet</h2>
+      <span>
+        <button id="modal-download" class="btn" type="button">Download</button>
+        <button id="modal-close" class="btn" type="button">Close</button>
+      </span>
+    </div>
+    <pre id="evidence-text"></pre>
+  </div>
+</div>
+
+<script src="/static/vendor/ag-grid-community.min.js"></script>
+<script src="/static/dashboard.js"></script>
+</body>
+</html>
