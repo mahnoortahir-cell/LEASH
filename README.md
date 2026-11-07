@@ -173,4 +173,4 @@ leash/paypal_api.py   real PayPal client (sandbox only)   leash/mock_paypal.py  
 leash/mandate_parser.py  plain English -> rules           leash/scenarios.py the attack suite
 ```
 
-MIT licensed. Put your name in `LICENSE`.
+MIT licensed.
