@@ -85,3 +85,30 @@ def test_missing_files_are_reported_not_crashed(tmp_path, capsys):
     with pytest.raises(SystemExit) as info:
         main(["mandate", "$100 a week at X", "--merchants", str(tmp_path / "none.json"), "--yes"])
     assert "none.json" in str(info.value)
+
+
+def test_a_paypal_permission_refusal_when_creating_a_dispute_gives_hand_made_steps(monkeypatch, capsys):
+    from leash import config
+    from leash.paypal_api import PayPalError
+
+    class Refusing:
+        def create_sandbox_dispute(self, **kwargs):
+            raise PayPalError("No permissions to set target_client_id", status=403)
+
+    monkeypatch.setattr(config, "paypal_client", lambda: Refusing())
+    code = main(["sandbox", "dispute", "--buyer-email", "b@personal.example.com", "--txn", "TX1", "--amount", "5.00"])
+    out = " ".join(capsys.readouterr().out.split())
+    assert code == 2 and "permission limit" in out and "Report a problem" in out and "sandbox disputes" in out
+
+
+def test_other_dispute_errors_are_still_reported_normally(monkeypatch, capsys):
+    from leash import config
+    from leash.paypal_api import PayPalError
+
+    class Broken:
+        def create_sandbox_dispute(self, **kwargs):
+            raise PayPalError("server on fire", status=500)
+
+    monkeypatch.setattr(config, "paypal_client", lambda: Broken())
+    assert main(["sandbox", "dispute", "--buyer-email", "b@x.y", "--txn", "T", "--amount", "5.00"]) == 2
+    assert "server on fire" in capsys.readouterr().out

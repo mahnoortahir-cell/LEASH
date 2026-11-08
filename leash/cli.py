@@ -220,8 +220,21 @@ def cmd_sandbox(args) -> int:
         return 0
     if action == "dispute":
         client = config.paypal_client()
-        did = client.create_sandbox_dispute(buyer_email=args.buyer_email, buyer_transaction_id=args.txn,
-                                            amount=Decimal(args.amount), currency=args.currency, reason=args.reason)
+        try:
+            did = client.create_sandbox_dispute(buyer_email=args.buyer_email, buyer_transaction_id=args.txn,
+                                                amount=Decimal(args.amount), currency=args.currency, reason=args.reason)
+        except PayPalError as exc:
+            if exc.status in (400, 401, 403) or "permission" in str(exc).lower():
+                console.print(f"[yellow]PayPal did not let this test app open a dispute for the buyer:[/yellow] {exc}")
+                console.print("This is a PayPal sandbox permission limit. It is not a problem with your payment or with Leash.")
+                console.print("Create the dispute by hand instead:")
+                console.print("  1. Log in at sandbox.paypal.com as your sandbox BUYER, open Activity, open the payment.")
+                console.print("  2. Choose 'Report a problem' and say the item did not arrive.")
+                console.print("  3. Then run: python -m leash sandbox disputes   (to see its PP-D- number)")
+                console.print(f"  4. And:      python -m leash evidence --log {args.log} --dispute PP-D-XXXX --request REQUEST_ID --out evidence.md")
+                console.print("     (python -m leash list shows your REQUEST_ID)")
+                return 2
+            raise
         console.print(f"Created sandbox dispute [bold]{did}[/bold]")
         console.print(f"Next: python -m leash evidence --log {args.log} --dispute {did} --out evidence.md")
         return 0

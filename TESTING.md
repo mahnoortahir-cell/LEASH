@@ -51,11 +51,13 @@ Click the scenario buttons on the left, one by one:
 - [ ] Evidence button on a green card: a report opens.
 - [ ] Stop the dashboard (Ctrl+C), start it again with `--sandbox`: your cards and budget are still there.
 
-## D. Dispute (hardest, do it last)
-- [ ] Log in at sandbox.paypal.com as the BUYER, Activity, open the payment, copy its Transaction ID.
-- [ ] `python -m leash sandbox dispute --buyer-email BUYEREMAIL --txn TRANSACTIONID --amount 24.50`
-- [ ] `python -m leash evidence --dispute PP-D-XXXX --out evidence.md` and open `evidence.md`.
-      If it says it cannot tell which purchase, run `python -m leash list`, then add `--request REQUESTID`.
+## D. Dispute (do it last)
+- [ ] Log in at sandbox.paypal.com as the BUYER, Activity, open the payment, "Report a problem", item not received.
+- [ ] `python -m leash sandbox disputes` shows the PP-D- number.
+- [ ] `python -m leash evidence --dispute PP-D-XXXX --request REQUESTID --out evidence.md`, then open `evidence.md`.
+      (`python -m leash list` shows REQUESTID.)
+- [ ] Optional: `python -m leash sandbox dispute ...` may be refused by PayPal ("No permissions to set target_client_id").
+      That is a PayPal limit; Leash then prints the hand-made steps above.
 
 ## E. Command line
 - [ ] `python -m leash verify` says "Log is intact".

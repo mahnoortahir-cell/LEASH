@@ -104,10 +104,13 @@ by agents is shown as plain text, never as HTML.
 6. `python -m leash sandbox pay --order ORDER_ID --mandate mandate.json` and open the link it prints. Log in
    as your sandbox **buyer** and approve.
 7. `python -m leash sandbox finalize --request REQUEST_ID` captures the payment.
-8. Make a test dispute (PayPal's docs describe a sandbox-only way: the buyer's transaction id is on the
-   buyer's Activity page), then:
-   `python -m leash sandbox dispute --buyer-email BUYER --txn BUYER_TXN_ID --amount 24.50`
-   `python -m leash evidence --dispute PP-D-XXXX --out evidence.md`
+8. Make a test dispute **by hand**: log in at sandbox.paypal.com as your sandbox buyer, open Activity, open the
+   payment, choose "Report a problem" and say the item did not arrive. Then:
+   `python -m leash sandbox disputes` (shows the PP-D- number) and
+   `python -m leash evidence --dispute PP-D-XXXX --request REQUEST_ID --out evidence.md`
+   (`python -m leash list` shows your REQUEST_ID). PayPal's docs also describe a command-line way
+   (`python -m leash sandbox dispute ...`), but in our tests PayPal refused it with a permission error
+   ("No permissions to set target_client_id"), so Leash prints these hand-made steps instead.
 
 If the dispute does not auto-link to the purchase, use `python -m leash list` and
 `python -m leash evidence --request REQUEST_ID`.
@@ -172,5 +175,4 @@ leash/audit.py        hash-chained log                    leash/evidence.py  pro
 leash/paypal_api.py   real PayPal client (sandbox only)   leash/mock_paypal.py  pretend PayPal for tests/demo
 leash/mandate_parser.py  plain English -> rules           leash/scenarios.py the attack suite
 ```
-
 MIT licensed.
