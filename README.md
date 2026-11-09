@@ -175,4 +175,28 @@ leash/audit.py        hash-chained log                    leash/evidence.py  pro
 leash/paypal_api.py   real PayPal client (sandbox only)   leash/mock_paypal.py  pretend PayPal for tests/demo
 leash/mandate_parser.py  plain English -> rules           leash/scenarios.py the attack suite
 ```
+
+## AI setup with Groq
+
+Leash supports OpenAI-compatible AI providers. The rule preview was
+tested using `openai/gpt-oss-120b` hosted on Groq.
+
+Copy `.env.example` to `.env` if you do not already have a `.env` file.
+Set these values in your private `.env`:
+
+LEASH_AI_API_KEY=your_groq_api_key
+LEASH_AI_BASE_URL=https://api.groq.com/openai/v1
+LEASH_AI_MODEL=openai/gpt-oss-120b
+
+Run `python -m leash dashboard`, open "Change the rules", and preview:
+"Max $50 per order, $150 a week at Pizza Palace, ask me above $30".
+
+A successful AI preview displays "Understood using: AI".
+Review the proposed rules before confirming them.
+AI proposes rules; deterministic code validates them and controls payments.
+
+Never commit `.env` or share API keys.
+Provider access and usage limits depend on your account.
+
+
 MIT licensed.
