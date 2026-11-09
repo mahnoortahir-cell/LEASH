@@ -28,6 +28,50 @@ class AnthropicLLM:
         )
         return "".join(block.text for block in response.content if getattr(block, "type", "") == "text")
 
+class OpenAICompatibleLLM:
+    """Connects to a provider offering an OpenAI-style chat API."""
+
+    def __init__(self):
+        self.api_key = os.environ["LEASH_AI_API_KEY"]
+        self.base_url = os.environ["LEASH_AI_BASE_URL"].rstrip("/")
+        self.model = os.environ["LEASH_AI_MODEL"]
+
+        if not self.base_url.startswith("https://"):
+            raise ValueError("LEASH_AI_BASE_URL must use HTTPS")
+
+    def complete(self, system: str, user: str, *, max_tokens: int = 800) -> str:
+        import httpx
+
+        response = httpx.post(
+            f"{self.base_url}/chat/completions",
+            headers={
+                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/json",
+            },
+            json={
+                "model": self.model,
+                "messages": [
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": user},
+                ],
+                "max_tokens": max_tokens,
+            },
+            timeout=60.0,
+            follow_redirects=False,
+        )
+
+        if response.is_error:
+            raise RuntimeError(
+                f"AI provider returned HTTP {response.status_code}. "
+                "Check your model, API key, account limits and provider settings."
+            )
+
+        data = response.json()
+        content = data["choices"][0]["message"]["content"]
+        if not isinstance(content, str) or not content.strip():
+            raise ValueError("The AI provider returned no text")
+        return content
+
 
 class FakeLLM:
     """For tests: returns the replies you give it, in order, and remembers what it was asked."""
@@ -42,12 +86,16 @@ class FakeLLM:
 
 
 def get_llm() -> Optional[LLM]:
-    """Return a real LLM if a key is configured, otherwise None (Leash then uses plain rules)."""
+    """Use the configured compatible provider, or Claude, or plain rules."""
+    if os.environ.get("LEASH_AI_API_KEY"):
+        return OpenAICompatibleLLM()
+
     if not os.environ.get("ANTHROPIC_API_KEY"):
         return None
+
     try:
         return AnthropicLLM()
-    except Exception:  # package missing or bad config: fall back quietly
+    except Exception:
         return None
 
 
